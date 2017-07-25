@@ -1,0 +1,45 @@
+---
+base:
+  image: myobplatform/go-dep:1.8
+  volumes:
+    - .:/go/src/github.com/MYOB-Technology/konfigurator
+  working_dir: /go/src/github.com/MYOB-Technology/konfigurator
+  environment:
+    - GOOS
+    - GOARCH
+    - BUILDKITE_TAG
+
+console:
+  extends:
+    service: base
+  entrypoint: bash
+
+make:
+  extends:
+    service: base
+  entrypoint: make
+
+release-base:
+  image: casualjim/github-release:latest
+  volumes:
+    - .:/root/app
+  working_dir: /root/app
+
+create-release:
+  extends:
+    service: release-base
+  command: release -u MYOB-Technology -r konfigurator -t $BUILDKITE_TAG
+  environment:
+    - GITHUB_TOKEN
+    - BUILDKITE_TAG
+
+upload-release:
+  extends:
+    service: release-base
+  command: upload -u MYOB-Technology -r konfigurator -t $BUILDKITE_TAG -n konfigurator-$GOOS-$GOARCH.zip -f build/konfigurator-$GOOS-$GOARCH.zip
+  environment:
+    - GITHUB_TOKEN
+    - GOOS
+    - GOARCH
+    - BUILDKITE_TAG
+
