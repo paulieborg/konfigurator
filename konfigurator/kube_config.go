@@ -2,6 +2,7 @@ package konfigurator
 
 import (
 	"html/template"
+	"io"
 	"os"
 )
 
@@ -9,6 +10,7 @@ type KubeConfig struct {
 	CA   string
 	URL  string
 	tmpl *template.Template
+	File io.ReadWriter
 }
 
 var content = `
@@ -30,7 +32,6 @@ users:
 - name: OIDCUser
   user:
     token: {{.Token}}
-
 `
 
 type configData struct {
@@ -49,11 +50,12 @@ func NewKubeConfig(ca, url string) (*KubeConfig, error) {
 		ca,
 		url,
 		tmpl,
+		os.Stdout,
 	}, nil
 }
 
 func (k *KubeConfig) Generate(token string) error {
-	err := k.tmpl.Execute(os.Stdout, configData{
+	err := k.tmpl.Execute(k.File, configData{
 		k.CA,
 		k.URL,
 		token,

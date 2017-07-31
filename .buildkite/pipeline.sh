@@ -2,9 +2,19 @@
 
 set -eu
 
+cat << STEP
+steps:
+  - command: 'docker-compose run --rm make clean test'
+    label: ':pray: Testing'
+    agents:
+      queue: 'central-dev'
+STEP
+
 if [[ -n "${BUILDKITE_TAG:-}" ]]; then
   cat << STEP
-steps:
+
+  - wait
+
   - command: 'docker-compose run --rm create-release'
     label: ':airplane: Releasing'
     agents:
@@ -32,13 +42,4 @@ STEP
 STEP
     done
   done
-
-else
-    cat << STEP
-steps:
-  - command: 'docker-compose run --rm make clean install build'
-    label: ':hammer: Building'
-    agents:
-      queue: 'central-dev'
-STEP
 fi
