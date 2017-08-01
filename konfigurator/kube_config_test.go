@@ -10,6 +10,25 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+type MockReadWriteCloser struct {
+	output         *bytes.Buffer
+	isClosedCalled bool
+	err            error
+}
+
+func (m *MockReadWriteCloser) Read(p []byte) (int, error) {
+	return m.output.Read(p)
+}
+
+func (m *MockReadWriteCloser) Write(p []byte) (int, error) {
+	return m.output.Write(p)
+}
+
+func (m *MockReadWriteCloser) Close() error {
+	m.isClosedCalled = true
+	return m.err
+}
+
 func TestKonfigurator(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Konfigurator Suite")
@@ -22,7 +41,7 @@ var _ = Describe("KubeConfig", func() {
 	)
 
 	BeforeEach(func() {
-		konfig, err = NewKubeConfig("123", "example.com")
+		konfig, err = NewKubeConfig("123", "example.com", os.Stdout)
 	})
 
 	Context("creating a new KubeConfig", func() {
@@ -33,14 +52,19 @@ var _ = Describe("KubeConfig", func() {
 			Expect(konfig).NotTo(BeNil())
 		})
 		It("should have Stdout in struct", func() {
-			Expect(konfig.File).To(Equal(os.Stdout))
+			Expect(konfig.Output).To(Equal(os.Stdout))
 		})
 	})
 
 	Context("Generate config content", func() {
-		It("should have the token in the output", func() {
-			konfig.File = bytes.NewBufferString("")
+		BeforeEach(func() {
+			konfig.Output = &MockReadWriteCloser{
+				output: bytes.NewBufferString(""),
+			}
 			konfig.Generate("GOHAN")
+		})
+
+		It("should have the token in the output", func() {
 			expectedContent := `
 apiVersion: v1
 clusters:
@@ -61,8 +85,13 @@ users:
   user:
     token: GOHAN
 `
-			buf, _ := konfig.File.(*bytes.Buffer)
-			Expect(buf.String()).To(Equal(expectedContent))
+			mockOutput, _ := konfig.Output.(*MockReadWriteCloser)
+			Expect(mockOutput.output.String()).To(Equal(expectedContent))
+		})
+
+		It("should close output handle", func() {
+			mockOutput, _ := konfig.Output.(*MockReadWriteCloser)
+			Expect(mockOutput.isClosedCalled).To(BeTrue())
 		})
 	})
 })

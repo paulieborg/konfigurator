@@ -3,6 +3,7 @@ package konfigurator
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	uuid "github.com/nu7hatch/gouuid"
@@ -15,7 +16,7 @@ type konfigurator struct {
 	kubeConfig     *KubeConfig
 }
 
-func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeApiUrl string) (*konfigurator, error) {
+func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeApiUrl, outputFilePath string) (*konfigurator, error) {
 	config, err := NewOidcGenerator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectEndpoint)
 	if err != nil {
 		return nil, err
@@ -26,7 +27,15 @@ func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectE
 		return nil, err
 	}
 
-	kubeConfig, err := NewKubeConfig(kubeCa, kubeApiUrl)
+	fileHandle := os.Stdout
+	if outputFilePath != "" {
+		fileHandle, err = os.Create(outputFilePath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	kubeConfig, err := NewKubeConfig(kubeCa, kubeApiUrl, fileHandle)
 	if err != nil {
 		return nil, err
 	}

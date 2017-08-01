@@ -3,14 +3,13 @@ package konfigurator
 import (
 	"html/template"
 	"io"
-	"os"
 )
 
 type KubeConfig struct {
-	CA   string
-	URL  string
-	tmpl *template.Template
-	File io.ReadWriter
+	CA     string
+	URL    string
+	tmpl   *template.Template
+	Output io.ReadWriteCloser
 }
 
 var content = `
@@ -40,7 +39,7 @@ type configData struct {
 	Token string
 }
 
-func NewKubeConfig(ca, url string) (*KubeConfig, error) {
+func NewKubeConfig(ca, url string, output io.ReadWriteCloser) (*KubeConfig, error) {
 	tmpl, err := template.New("config").Parse(content)
 	if err != nil {
 		return nil, err
@@ -50,12 +49,13 @@ func NewKubeConfig(ca, url string) (*KubeConfig, error) {
 		ca,
 		url,
 		tmpl,
-		os.Stdout,
+		output,
 	}, nil
 }
 
 func (k *KubeConfig) Generate(token string) error {
-	err := k.tmpl.Execute(k.File, configData{
+	defer k.Output.Close()
+	err := k.tmpl.Execute(k.Output, configData{
 		k.CA,
 		k.URL,
 		token,
