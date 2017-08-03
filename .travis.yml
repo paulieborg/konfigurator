@@ -2,19 +2,18 @@ language: go
 
 matrix:
   include:
-    - go: 1.8
+  - go: 1.8
 
 env:
-  GITHUB_TOKEN:
-    secure: pZvlh662U2/rsb0hWSP66L1G2v6e51ZPWkm/k88Kh5w605myE5GCC1YP1iS9fycVQ5M/uaEBgKob3MBXfdlK9865FnKJlhlJFLT4Emx1KKfZHIFfOe7oqBy+Nw6MGZtXC1gZNV0cBvhA3756D4Y+Gzzl+vQG4pQb+C6BlY7X2+4CEkeWdEkyy/22pjLPmetrXb+Ukp0fE8FGGiRM5yZZqLXKe99/hADSq7xDRmO3eIOh7W+DM2JIGfQQ4+f70TuelXcZKS+bRxdIODZoqfCNj3VarPmp0Td4jZkYg30X/wU9bhetAhXM9voUIHUJ4EwfEG8+C3yzls7jKLQZLb2yYb4vdcXM7sCjm83cqcVv3MKuBaO1Lty86WCiHB14AxodmT1a8KmIRFSttNnPeCY/CzY/MQ/HgUY4ayc+DSznhtCmO0pvA6P/jf0I+T/UF6VpTF+wb5fCm5TWdyj6Z1mEPk8o0Q5NRWMDKwzI1VvQu4HZGkjIC4gQAcdwls9dFf5kFa+pQFmagXw9wbnT8/xeOfmt7I0RsyFCaCpWNH0JuhBgOd+Z+dohcC20BzPDnu+ijY9dMfMZsoOHHAnIoYgq3jcCl4Hswzzb3rPka5fw1t/d+TbWWbRZkZenHBLW/rrmG9O8rZNDGuP6BggSWHiW1a7lDlqSVV02TBml4jyej+0=
+  matrix:
+    secure: SLsX13k13jrEFkBXyM6sX33SiT8FPw6lljDJp1ZZtWI4MoYgGti9DNrfbkkK2h9Kq5XnvYUv7XiR0tW4p8P7r968sAWUX31ZEifaz5k9u49yggliGL6hDGF69a8d5XdzeAVOzx3CDWybe2Rd5RP9pVIZP1S4VRTItmCsOgB3M63ai0RkjUcbdFRIwbVyi/NdyBKp5H6cahvTTSQI1/RjZfm4G7Ox66ub+vapESrFr6AXtVRulbPg6tIeBOtItfRcEgvXeVps6B+tAoVkiU1f3GpeykPpz7hCfgO/Tstio8u3mePOcVDtvog5FJn1cGRt6AtWwG+2NX/7MK97ck/U8BUW0HCpnyJOyj0HJ8qFdGqyzywp+9/AO0LYCmDzOJtKv3xJzC3Oi81WtbLESNinmeCGhDH/F77IhIt5NdN3M8Qlp899nYGVPnvOWtpIXCqV3HKWfQwjSZPr9YIlCMmpmXzbZnnHpbt7dcM05bM9m+kO/BamIi150+VK7U6NZQ84xO0JvZUxIdsZ3s5JQX2vgojMTSpw72hMK110BWB0Ru23usyDqBXLDMDPjNS62ky4IjhPfKy3GYvdPxR+BWkj+9G/8G68hoUP3eOre0M7kzZhFStcsMZpdkzmSKqs17IVSX7LotFs8BIHMG+5mJHp8dgB1zgxNcoS+FeP4PHqP6Q=
 
 install:
-  - go get github.com/mitchellh/gox
-  - go get github.com/golang/dep/cmd/dep
-  - make install
+- go get github.com/golang/dep/cmd/dep
+- make install
 
 script:
-  - make test
+- make test
 
 after_success:
-  - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
+- test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
