@@ -13,7 +13,9 @@ script:
   - make test
 
 after_success:
-  - gox -output "build/konfigurator-{{.OS}}-{{.Arch}}"
+  on:
+    tags: true
+  - gox -output "build/konfigurator-{{.OS}}-{{.Arch}}" -os "linux darwin windows" -ldflags "-X main.version=$(TRAVIS_TAG)"
   - ls build/
 
 deploy:
