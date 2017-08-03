@@ -16,6 +16,6 @@ build:
 clean:
 	rm -rf vendor/ $(BUILD_DIR)
 
-test: install
+test:
 	@echo "+++ Running Tests"
 	cd konfigurator && go test
