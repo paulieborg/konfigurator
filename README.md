@@ -1,6 +1,6 @@
 # Kubectl OIDC Config Generator
 
-[![Build status](https://badge.buildkite.com/10540b85a34e726f839daf35543aec5e484dba8a32a63f3491.svg)](https://buildkite.com/myob/konfigurator)
+[![Build Status](https://travis-ci.org/MYOB-Technology/konfigurator.svg?branch=master)](https://travis-ci.org/MYOB-Technology/konfigurator)
 
 This tool generates a `kubeconfig` file with the OpenID Connect token authentication, allowing a user to use `kubectl` with OIDC configured clusters.
 

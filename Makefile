@@ -4,7 +4,7 @@ BUILD_DIR = build
 BUILD_ARTIFACT = "$(BUILD_DIR)/konfigurator"
 
 install:
-	echo "--- Installing Dependencies"
+	@echo "--- Installing Dependencies"
 	dep ensure -v
 
 build:
@@ -17,5 +17,5 @@ clean:
 	rm -rf vendor/ $(BUILD_DIR)
 
 test: install
-	echo "+++ Running Tests"
+	@echo "+++ Running Tests"
 	cd konfigurator && go test
