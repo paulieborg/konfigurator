@@ -5,8 +5,23 @@ matrix:
     - go: 1.8
 
 install:
+  - go get github.com/mitchellh/gox
   - go get github.com/golang/dep/cmd/dep
   - make install
 
 script:
   - make test
+
+after_success:
+  - gox -output "build/konfigurator-{{.OS}}-{{.Arch}}"
+  - ls build/
+
+deploy:
+  provider: releases
+  api_key:
+    secure: pZvlh662U2/rsb0hWSP66L1G2v6e51ZPWkm/k88Kh5w605myE5GCC1YP1iS9fycVQ5M/uaEBgKob3MBXfdlK9865FnKJlhlJFLT4Emx1KKfZHIFfOe7oqBy+Nw6MGZtXC1gZNV0cBvhA3756D4Y+Gzzl+vQG4pQb+C6BlY7X2+4CEkeWdEkyy/22pjLPmetrXb+Ukp0fE8FGGiRM5yZZqLXKe99/hADSq7xDRmO3eIOh7W+DM2JIGfQQ4+f70TuelXcZKS+bRxdIODZoqfCNj3VarPmp0Td4jZkYg30X/wU9bhetAhXM9voUIHUJ4EwfEG8+C3yzls7jKLQZLb2yYb4vdcXM7sCjm83cqcVv3MKuBaO1Lty86WCiHB14AxodmT1a8KmIRFSttNnPeCY/CzY/MQ/HgUY4ayc+DSznhtCmO0pvA6P/jf0I+T/UF6VpTF+wb5fCm5TWdyj6Z1mEPk8o0Q5NRWMDKwzI1VvQu4HZGkjIC4gQAcdwls9dFf5kFa+pQFmagXw9wbnT8/xeOfmt7I0RsyFCaCpWNH0JuhBgOd+Z+dohcC20BzPDnu+ijY9dMfMZsoOHHAnIoYgq3jcCl4Hswzzb3rPka5fw1t/d+TbWWbRZkZenHBLW/rrmG9O8rZNDGuP6BggSWHiW1a7lDlqSVV02TBml4jyej+0=
+  file: build/*
+  skip_cleanup: true
+  on:
+    tags: true
+
