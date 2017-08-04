@@ -1,0 +1,15 @@
+builds:
+  - goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - 386
+
+archive:
+  name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}-{{ .Version }}"
+  format: zip
+  replacements:
+    386: i386
+    amd64: x86_64
