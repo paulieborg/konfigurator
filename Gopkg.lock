@@ -80,6 +80,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "v1"
+  name = "gopkg.in/jarcoal/httpmock.v1"
+  packages = ["."]
+  revision = "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
+
+[[projects]]
   name = "gopkg.in/square/go-jose.v2"
   packages = [".","cipher","json"]
   revision = "b25e6cab129e4a54675b42ea49d38e9c33ade9e6"
@@ -94,6 +100,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d08c2ead2ecdd2097d085bc7304d0768e6b3c4da52230048e033082a14b6a142"
+  inputs-digest = "20051be56c39441cab2566ca9453ea115286c51dcc7d35f8e6333f2e751823b5"
   solver-name = "gps-cdcl"
   solver-version = 1

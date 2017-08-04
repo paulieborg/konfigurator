@@ -9,14 +9,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type oidcGenerator struct {
+type OidcGenerator struct {
 	ctx                   context.Context
 	config                oauth2.Config
 	localUrl              string
 	localRedirectEndpoint string
 }
 
-func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint string) (*oidcGenerator, error) {
+func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, adfsHostUrl)
 	if err != nil {
@@ -24,7 +24,7 @@ func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint st
 	}
 
 	localUrl := "localhost:" + localPort
-	return &oidcGenerator{
+	return &OidcGenerator{
 		ctx: ctx,
 		config: oauth2.Config{
 			ClientID:    clientId,
@@ -36,15 +36,15 @@ func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint st
 	}, nil
 }
 
-func (o *oidcGenerator) AuthCodeURL(state string) string {
+func (o *OidcGenerator) AuthCodeURL(state string) string {
 	return o.config.AuthCodeURL(state)
 }
 
-func (o *oidcGenerator) openBrowser() {
+func (o *OidcGenerator) openBrowser() {
 	open.Run("http://" + o.localUrl)
 }
 
-func (o *oidcGenerator) GetToken(code string) (string, error) {
+func (o *OidcGenerator) GetToken(code string) (string, error) {
 	oauth2Token, err := o.config.Exchange(o.ctx, code)
 	if err != nil {
 		return "", err

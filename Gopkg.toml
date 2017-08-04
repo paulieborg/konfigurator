@@ -38,6 +38,10 @@
   name = "github.com/skratchdot/open-golang"
 
 [[constraint]]
+  name = "gopkg.in/jarcoal/httpmock.v1"
+  branch = "v1"
+
+[[constraint]]
   name = "github.com/urfave/cli"
   version = "1.19.1"
 
