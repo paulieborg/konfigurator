@@ -1,0 +1,19 @@
+language: go
+
+matrix:
+  include:
+  - go: 1.8
+
+env:
+  matrix:
+    secure: SLsX13k13jrEFkBXyM6sX33SiT8FPw6lljDJp1ZZtWI4MoYgGti9DNrfbkkK2h9Kq5XnvYUv7XiR0tW4p8P7r968sAWUX31ZEifaz5k9u49yggliGL6hDGF69a8d5XdzeAVOzx3CDWybe2Rd5RP9pVIZP1S4VRTItmCsOgB3M63ai0RkjUcbdFRIwbVyi/NdyBKp5H6cahvTTSQI1/RjZfm4G7Ox66ub+vapESrFr6AXtVRulbPg6tIeBOtItfRcEgvXeVps6B+tAoVkiU1f3GpeykPpz7hCfgO/Tstio8u3mePOcVDtvog5FJn1cGRt6AtWwG+2NX/7MK97ck/U8BUW0HCpnyJOyj0HJ8qFdGqyzywp+9/AO0LYCmDzOJtKv3xJzC3Oi81WtbLESNinmeCGhDH/F77IhIt5NdN3M8Qlp899nYGVPnvOWtpIXCqV3HKWfQwjSZPr9YIlCMmpmXzbZnnHpbt7dcM05bM9m+kO/BamIi150+VK7U6NZQ84xO0JvZUxIdsZ3s5JQX2vgojMTSpw72hMK110BWB0Ru23usyDqBXLDMDPjNS62ky4IjhPfKy3GYvdPxR+BWkj+9G/8G68hoUP3eOre0M7kzZhFStcsMZpdkzmSKqs17IVSX7LotFs8BIHMG+5mJHp8dgB1zgxNcoS+FeP4PHqP6Q=
+
+install:
+- go get github.com/golang/dep/cmd/dep
+- make install
+
+script:
+- make test
+
+after_success:
+- test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
