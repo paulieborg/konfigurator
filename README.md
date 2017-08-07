@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/MYOB-Technology/konfigurator.svg?branch=master)](https://travis-ci.org/MYOB-Technology/konfigurator)
 
+[![Coverage Status](https://coveralls.io/repos/github/MYOB-Technology/konfigurator/badge.svg?branch=master)](https://coveralls.io/github/MYOB-Technology/konfigurator?branch=master)
+
 This tool generates a `kubeconfig` file with the OpenID Connect token authentication, allowing a user to use `kubectl` with OIDC configured clusters.
 
 # Usage
