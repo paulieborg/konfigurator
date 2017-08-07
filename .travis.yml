@@ -17,5 +17,5 @@ script:
 - make test
 
 after_success:
-- goveralls -service=travis-pro
+- goveralls -service=travis-ci
 - test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
