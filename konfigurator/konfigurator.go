@@ -10,7 +10,7 @@ import (
 )
 
 type konfigurator struct {
-	config         *oidcGenerator
+	config         *OidcGenerator
 	tokenRetrieved bool
 	state          string
 	kubeConfig     *KubeConfig
