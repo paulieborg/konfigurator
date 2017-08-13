@@ -1,6 +1,7 @@
 package konfigurator
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -90,17 +91,20 @@ func (k *konfigurator) noContentHandler(w http.ResponseWriter, r *http.Request) 
 
 func (k *konfigurator) callbackHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("state") != k.state {
-		panic("state did not match")
+		log.Printf("URL State did not match: expected %s, got %s", k.state, r.URL.Query().Get("state"))
+		return
 	}
 
 	token, err := k.config.GetToken(r.URL.Query().Get("code"))
 	if err != nil {
-		panic(err)
+		log.Printf("Failed extracting token: %s", err)
+		return
 	}
 
 	k.kubeConfig.Generate(token)
-	w.Write([]byte(httpContent))
+	io.WriteString(w, httpContent)
 	k.tokenRetrieved = true
+	return
 }
 
 var httpContent = `
