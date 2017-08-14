@@ -9,45 +9,45 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Struct that deals with OIDC information such as the redirect endpoint and all the Oauth2 config
+// OidcGenerator deals with OIDC information such as the redirect endpoint and all the Oauth2 config.
 type OidcGenerator struct {
 	ctx                   context.Context
 	config                oauth2.Config
-	localUrl              string
+	localURL              string
 	localRedirectEndpoint string
 }
 
-// Contructor for OidcGenerator which uses a default background context and 'localhost' for the redirectUrl
-func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
+// NewOidcGenerator uses a default background context and 'localhost' for the redirectUrl and returns a new OidcGenerator struct.
+func NewOidcGenerator(adfsHostURL, clientID, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, adfsHostUrl)
+	provider, err := oidc.NewProvider(ctx, adfsHostURL)
 	if err != nil {
 		return nil, err
 	}
 
-	localUrl := "localhost:" + localPort
+	localURL := "localhost:" + localPort
 	return &OidcGenerator{
 		ctx: ctx,
 		config: oauth2.Config{
-			ClientID:    clientId,
-			RedirectURL: "http://" + localUrl + localRedirectEndpoint,
+			ClientID:    clientID,
+			RedirectURL: "http://" + localURL + localRedirectEndpoint,
 			Endpoint:    provider.Endpoint(),
 		},
-		localUrl:              localUrl,
+		localURL:              localURL,
 		localRedirectEndpoint: localRedirectEndpoint,
 	}, nil
 }
 
-// Simply allows the same method call to be passed on to the underlying Oauth2 config struct
+// AuthCodeURL calls the underlying oauth2.Config AuthCodeURL.
 func (o *OidcGenerator) AuthCodeURL(state string) string {
 	return o.config.AuthCodeURL(state)
 }
 
 func (o *OidcGenerator) openBrowser() {
-	open.Run("http://" + o.localUrl)
+	open.Run("http://" + o.localURL)
 }
 
-// Retrieves the Oauth2 token from the request and extracts the "id_token" part of it
+// GetToken retrieves the Oauth2 token from the request and extracts the "id_token" part of it.
 func (o *OidcGenerator) GetToken(code string) (string, error) {
 	oauth2Token, err := o.config.Exchange(o.ctx, code)
 	if err != nil {

@@ -17,9 +17,9 @@ type konfigurator struct {
 	kubeConfig     *KubeConfig
 }
 
-// Constructor for Konfigurator which creates a file and a uuid to use as a state to check MITM attacks
-func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeApiUrl, outputFilePath string) (*konfigurator, error) {
-	config, err := NewOidcGenerator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectEndpoint)
+// NewKonfigurator creates a file and a uuid to use as a state to check MITM attacks and returns a new Konfigurator struct.
+func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeAPIURL, outputFilePath string) (*konfigurator, error) {
+	config, err := NewOidcGenerator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectE
 		}
 	}
 
-	kubeConfig, err := NewKubeConfig(kubeCa, kubeApiUrl, fileHandle)
+	kubeConfig, err := NewKubeConfig(kubeCa, kubeAPIURL, fileHandle)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func NewKonfigurator(oidcHost, oidcClientId, oidcClientPort, oidcClientRedirectE
 }
 
 func (k *konfigurator) Orchestrate() error {
-	server := k.startHttpServer()
+	server := k.startHTTPServer()
 	k.config.openBrowser()
 
 	for !k.tokenRetrieved {
@@ -66,8 +66,8 @@ func (k *konfigurator) Orchestrate() error {
 	return nil
 }
 
-func (k *konfigurator) startHttpServer() *http.Server {
-	srv := &http.Server{Addr: k.config.localUrl}
+func (k *konfigurator) startHTTPServer() *http.Server {
+	srv := &http.Server{Addr: k.config.localURL}
 
 	http.HandleFunc("/", k.rootHandler)
 	http.HandleFunc("/favicon.ico", k.noContentHandler)

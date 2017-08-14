@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// KubeConfig holds the information necessary to generate a Kubernetes configuration file which icludes the server's CA, the api url and where to write the file to
+// KubeConfig holds the information necessary to generate a Kubernetes configuration file which icludes the server's CA, the api url and where to write the file to.
 type KubeConfig struct {
 	CA     string
 	URL    string
@@ -40,7 +40,7 @@ type configData struct {
 	Token string
 }
 
-// Returns an initialized KubeConfig struct
+// NewKubeConfig returns an initialized KubeConfig struct.
 func NewKubeConfig(ca, url string, output io.ReadWriteCloser) (*KubeConfig, error) {
 	tmpl, err := template.New("config").Parse(content)
 	if err != nil {
@@ -55,7 +55,7 @@ func NewKubeConfig(ca, url string, output io.ReadWriteCloser) (*KubeConfig, erro
 	}, nil
 }
 
-// This function executes the writing of the config to the appropriate location (os.Stdout, os.File, etc...)
+// Generate executes the writing of the config to the appropriate location (os.Stdout, os.File, etc...).
 func (k *KubeConfig) Generate(token string) error {
 	defer k.Output.Close()
 	err := k.tmpl.Execute(k.Output, configData{
