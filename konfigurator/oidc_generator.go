@@ -9,6 +9,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Struct that deals with OIDC information such as the redirect endpoint and all the Oauth2 config
 type OidcGenerator struct {
 	ctx                   context.Context
 	config                oauth2.Config
@@ -16,6 +17,7 @@ type OidcGenerator struct {
 	localRedirectEndpoint string
 }
 
+// Contructor for OidcGenerator which uses a default background context and 'localhost' for the redirectUrl
 func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, adfsHostUrl)
@@ -36,6 +38,7 @@ func NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint st
 	}, nil
 }
 
+// Simply allows the same method call to be passed on to the underlying Oauth2 config struct
 func (o *OidcGenerator) AuthCodeURL(state string) string {
 	return o.config.AuthCodeURL(state)
 }
@@ -44,6 +47,7 @@ func (o *OidcGenerator) openBrowser() {
 	open.Run("http://" + o.localUrl)
 }
 
+// Retrieves the Oauth2 token from the request and extracts the "id_token" part of it
 func (o *OidcGenerator) GetToken(code string) (string, error) {
 	oauth2Token, err := o.config.Exchange(o.ctx, code)
 	if err != nil {
