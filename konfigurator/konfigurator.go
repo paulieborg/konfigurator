@@ -1,3 +1,12 @@
+/*
+Package konfigurator provides a library for generating Kubernetes config files by means of OpenID connect authentication.
+It will do an OIDC Token exchange to the Host given and create a configuration file with all the information provided as
+well as the token retrieved. By default, konfigurator will output the contents of the file to `stdout`, this can be overridden
+with the `-o|--output` flag.
+
+NOTE: that this tool will start a local webserver in the provided port to be able to handle the callback from the OpenID Connect
+protocol, so it is important to make sure the port provided is not in use by the host.
+*/
 package konfigurator
 
 import (

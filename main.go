@@ -1,3 +1,6 @@
+/*
+Konfigurator provides a CLI tool and a library to generate Kubernetes .config files for OIDC Configured clusters.
+*/
 package main
 
 import (
