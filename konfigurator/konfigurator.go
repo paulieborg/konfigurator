@@ -22,7 +22,7 @@ import (
 
 type konfigurator struct {
 	config         *OidcGenerator
-	tokenRetrieved bool
+	tokenRetrieved chan int
 	state          string
 	kubeConfig     *KubeConfig
 }
@@ -54,7 +54,7 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 
 	return &konfigurator{
 		config,
-		false,
+		make(chan int, 1),
 		uid.String(),
 		kubeConfig,
 	}, nil
@@ -64,11 +64,13 @@ func (k *konfigurator) Orchestrate() error {
 	server := k.startHTTPServer()
 	k.config.openBrowser()
 
-	for !k.tokenRetrieved {
-		time.Sleep(1 * time.Second)
-	}
+	// block
+	<-k.tokenRetrieved
 
-	err := server.Shutdown(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := server.Shutdown(ctx)
 	if err != nil {
 		return err // failure/timeout shutting down the server gracefully
 	}
@@ -115,7 +117,8 @@ func (k *konfigurator) callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	k.kubeConfig.Generate(token)
 	io.WriteString(w, httpContent)
-	k.tokenRetrieved = true
+	// unblock
+	k.tokenRetrieved <- 1
 	return
 }
 
