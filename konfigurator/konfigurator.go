@@ -10,6 +10,7 @@ protocol, so it is important to make sure the port provided is not in use by the
 package konfigurator
 
 import (
+	"context"
 	"io"
 	"log"
 	"net/http"
@@ -67,7 +68,7 @@ func (k *konfigurator) Orchestrate() error {
 		time.Sleep(1 * time.Second)
 	}
 
-	err := server.Shutdown(nil)
+	err := server.Shutdown(context.Background())
 	if err != nil {
 		return err // failure/timeout shutting down the server gracefully
 	}
@@ -83,9 +84,10 @@ func (k *konfigurator) startHTTPServer() *http.Server {
 	http.HandleFunc(k.config.localRedirectEndpoint, k.callbackHandler)
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 			log.Printf("Httpserver: ListenAndServe() error: %s", err)
 		}
+		return
 	}()
 
 	return srv

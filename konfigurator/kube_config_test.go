@@ -3,7 +3,6 @@ package konfigurator_test
 import (
 	"bytes"
 	"os"
-	"testing"
 
 	. "github.com/MYOB-Technology/konfigurator/konfigurator"
 	. "github.com/onsi/ginkgo"
@@ -27,11 +26,6 @@ func (m *MockReadWriteCloser) Write(p []byte) (int, error) {
 func (m *MockReadWriteCloser) Close() error {
 	m.isClosedCalled = true
 	return m.err
-}
-
-func TestKonfigurator(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Konfigurator Suite")
 }
 
 var _ = Describe("KubeConfig", func() {
