@@ -20,7 +20,7 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 )
 
-type konfigurator struct {
+type Konfigurator struct {
 	config         *OidcGenerator
 	tokenRetrieved chan int
 	state          string
@@ -28,13 +28,13 @@ type konfigurator struct {
 }
 
 // NewKonfigurator creates a file and a uuid to use as a state to check MITM attacks and returns a new Konfigurator struct.
-func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeAPIURL, outputFilePath string) (*konfigurator, error) {
+func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeAPIURL, outputFilePath string) (*Konfigurator, error) {
 	config, err := NewOidcGenerator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	uid, err := uuid.NewV4()
+	uid, _ := uuid.NewV4()
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 		return nil, err
 	}
 
-	return &konfigurator{
+	return &Konfigurator{
 		config,
 		make(chan int, 1),
 		uid.String(),
@@ -60,7 +60,11 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 	}, nil
 }
 
-func (k *konfigurator) Orchestrate() error {
+// Orchestrate will start a local web server based on parameters from the constructor,
+// will open a browser and initiate the authentication process. Once the process is done,
+// it will output the kubernetes config file to the output file path (or stdout of that is empty)
+// and close the web server. The webserver will only be closed once the authentication succeeds.
+func (k *Konfigurator) Orchestrate() error {
 	server := k.startHTTPServer()
 	k.config.openBrowser()
 
@@ -78,7 +82,7 @@ func (k *konfigurator) Orchestrate() error {
 	return nil
 }
 
-func (k *konfigurator) startHTTPServer() *http.Server {
+func (k *Konfigurator) startHTTPServer() *http.Server {
 	srv := &http.Server{Addr: k.config.localURL}
 
 	http.HandleFunc("/", k.rootHandler)
@@ -95,15 +99,15 @@ func (k *konfigurator) startHTTPServer() *http.Server {
 	return srv
 }
 
-func (k *konfigurator) rootHandler(w http.ResponseWriter, r *http.Request) {
+func (k *Konfigurator) rootHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, k.config.AuthCodeURL(k.state), http.StatusFound)
 }
 
-func (k *konfigurator) noContentHandler(w http.ResponseWriter, r *http.Request) {
+func (k *Konfigurator) noContentHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (k *konfigurator) callbackHandler(w http.ResponseWriter, r *http.Request) {
+func (k *Konfigurator) callbackHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("state") != k.state {
 		log.Printf("URL State did not match: expected %s, got %s", k.state, r.URL.Query().Get("state"))
 		return

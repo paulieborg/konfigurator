@@ -10,42 +10,10 @@ import (
 	"gopkg.in/jarcoal/httpmock.v1"
 )
 
-const MockResponseOidcConfiguration = `{
-	"authorization_endpoint": "http://example.com/auth",
-	"token_endpoint": "http://example.com/token",
-	"userinfo_endpoint": "http://example.com/user-info",
-	"issuer": "http://example.com",
-	"jwks_uri": "http://example.com/jwks"
-}`
-
-const MockResponseToken = `{
-	"access_token": "access",
-	"token_type": "type",
-	"refresh_token": "refresh",
-	"expires_in" : "5",
-	"expires": "5",
-	"id_token": "super_id_token"
-}`
-
-const MockResponseMissingToken = `{
-	"access_token": "access",
-	"token_type": "type",
-	"refresh_token": "refresh",
-	"expires_in" : "5",
-	"expires": "5"
-}`
-
 var _ = Describe("OidcGenerator", func() {
 	var (
 		konfig *OidcGenerator
 		err    error
-	)
-
-	const (
-		adfsHostUrl           = "http://example.com"
-		clientId              = "fake-client-id"
-		localPort             = "9999"
-		localRedirectEndpoint = "/redirect-endpoint"
 	)
 
 	Describe("valid OidcGenerator", func() {
@@ -56,7 +24,7 @@ var _ = Describe("OidcGenerator", func() {
 				httpmock.NewStringResponder(http.StatusOK, MockResponseOidcConfiguration),
 			)
 
-			konfig, err = NewOidcGenerator(adfsHostUrl, clientId, localPort, localRedirectEndpoint)
+			konfig, err = NewOidcGenerator(adfsHostUrl, clientID, localPort, localRedirectEndpoint)
 		})
 
 		Context("creating a new OidcGenerator", func() {
@@ -75,7 +43,7 @@ var _ = Describe("OidcGenerator", func() {
 				Expect(konfig.AuthCodeURL(state)).To(
 					ContainSubstring(
 						"?client_id=%s&redirect_uri=%s&response_type=code&state=%s",
-						clientId,
+						clientID,
 						url.QueryEscape("http://localhost:"+localPort+localRedirectEndpoint),
 						state,
 					),
