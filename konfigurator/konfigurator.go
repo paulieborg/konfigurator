@@ -28,7 +28,7 @@ type Konfigurator struct {
 }
 
 // NewKonfigurator creates a file and a uuid to use as a state to check MITM attacks and returns a new Konfigurator struct.
-func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeAPIURL, outputFilePath string) (*Konfigurator, error) {
+func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint, kubeCa, kubeAPIURL, kubeNamespace, outputFilePath string) (*Konfigurator, error) {
 	config, err := NewOidcGenerator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectEndpoint)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 		}
 	}
 
-	kubeConfig, err := NewKubeConfig(kubeCa, kubeAPIURL, fileHandle)
+	kubeConfig, err := NewKubeConfig(kubeCa, kubeAPIURL, kubeNamespace, fileHandle)
 	if err != nil {
 		return nil, err
 	}

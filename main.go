@@ -14,7 +14,7 @@ import (
 var version = "SNAPSHOT"
 
 func main() {
-	var clientID, host, port, redirectEndpoint, ca, api, output string
+	var clientID, host, port, redirectEndpoint, ca, namespace, api, output string
 	app := cli.NewApp()
 	app.Name = "konfigurator"
 	app.Usage = "generate a kubeconfig file with OIDC token"
@@ -49,6 +49,12 @@ func main() {
 			Value:       "",
 		},
 		cli.StringFlag{
+			Name:        "namespace, n",
+			Usage:       "namespace to use, for no namespace section use \"\"",
+			Value:       "default",
+			Destination: &namespace,
+		},
+		cli.StringFlag{
 			Name:        "port, p",
 			Usage:       "port for the local server",
 			Value:       "9000",
@@ -71,7 +77,7 @@ func main() {
 			}
 		}
 
-		konfig, err := konfigurator.NewKonfigurator(host, clientID, port, redirectEndpoint, ca, api, output)
+		konfig, err := konfigurator.NewKonfigurator(host, clientID, port, redirectEndpoint, ca, api, namespace, output)
 		if err != nil {
 			return err
 		}

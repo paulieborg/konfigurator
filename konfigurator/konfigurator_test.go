@@ -28,7 +28,7 @@ var _ = Describe("Konfigurator", func() {
 	Describe("A valid Konfigurator", func() {
 		BeforeEach(func() {
 			oidcGeneratorMockResponder()
-			konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "CA", "api.url.com", "/tmp/path")
+			konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "CA", "api.url.com", "", "/tmp/path")
 		})
 
 		Context("creating a new Konfigurator", func() {
@@ -45,7 +45,7 @@ var _ = Describe("Konfigurator", func() {
 	Describe("An invalid Konfigurator", func() {
 		Context("Error creating an OidcGenerator", func() {
 			It("should return an error", func() {
-				konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "CA", "api.url.com", "/tmp/path")
+				konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "CA", "api.url.com", "", "/tmp/path")
 				Expect(err).NotTo(BeNil())
 				Expect(konfig).To(BeNil())
 			})
@@ -54,7 +54,7 @@ var _ = Describe("Konfigurator", func() {
 		Context("Error creating a new file", func() {
 			It("should error when creating a new file", func() {
 				oidcGeneratorMockResponder()
-				konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "cd", "api.url.com", "/tmp/somepath/!~!~!@#!#@that/wont/exists/config")
+				konfig, err = NewKonfigurator(adfsHostUrl, clientID, localPort, localRedirectEndpoint, "cd", "api.url.com", "someNamespace", "/tmp/somepath/!~!~!@#!#@that/wont/exists/config")
 				_, ok := err.(*os.PathError)
 				Expect(ok).To(BeTrue())
 				Expect(konfig).To(BeNil())

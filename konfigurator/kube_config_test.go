@@ -35,7 +35,7 @@ var _ = Describe("KubeConfig", func() {
 	)
 
 	BeforeEach(func() {
-		konfig, err = NewKubeConfig("123", "example.com", os.Stdout)
+		konfig, err = NewKubeConfig("123", "example.com", "", os.Stdout)
 	})
 
 	Context("creating a new KubeConfig", func() {
@@ -58,7 +58,7 @@ var _ = Describe("KubeConfig", func() {
 			konfig.Generate("GOHAN")
 		})
 
-		It("should have the token in the output", func() {
+		It("should have the token in the output and no namespace", func() {
 			expectedContent := `
 apiVersion: v1
 clusters:
@@ -86,6 +86,40 @@ users:
 		It("should close output handle", func() {
 			mockOutput, _ := konfig.Output.(*MockReadWriteCloser)
 			Expect(mockOutput.isClosedCalled).To(BeTrue())
+		})
+	})
+
+	Context("Generate config content with namespaces", func() {
+		It("should have the token in the output and a namespace", func() {
+			konfig, err = NewKubeConfig("123", "example.com", "default", os.Stdout)
+			konfig.Output = &MockReadWriteCloser{
+				output: bytes.NewBufferString(""),
+			}
+			konfig.Generate("GOHAN")
+
+			expectedContent := `
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: 123
+    server: https://api.example.com
+  name: example.com
+contexts:
+- context:
+    cluster: example.com
+    namespace: default
+    user: OIDCUser
+  name: example.com
+current-context: example.com
+kind: Config
+preferences: {}
+users:
+- name: OIDCUser
+  user:
+    token: GOHAN
+`
+			mockOutput, _ := konfig.Output.(*MockReadWriteCloser)
+			Expect(mockOutput.output.String()).To(Equal(expectedContent))
 		})
 	})
 })

@@ -9,6 +9,7 @@ import (
 type KubeConfig struct {
 	CA     string
 	URL    string
+	NS     string
 	tmpl   *template.Template
 	Output io.ReadWriteCloser
 }
@@ -23,6 +24,9 @@ clusters:
 contexts:
 - context:
     cluster: {{.URL}}
+    {{- if .NS}}
+    namespace: {{.NS}}
+    {{- end}}
     user: OIDCUser
   name: {{.URL}}
 current-context: {{.URL}}
@@ -37,11 +41,12 @@ users:
 type configData struct {
 	CA    string
 	URL   string
+	NS    string
 	Token string
 }
 
 // NewKubeConfig returns an initialized KubeConfig struct.
-func NewKubeConfig(ca, url string, output io.ReadWriteCloser) (*KubeConfig, error) {
+func NewKubeConfig(ca, url, namespace string, output io.ReadWriteCloser) (*KubeConfig, error) {
 	tmpl, err := template.New("config").Parse(content)
 	if err != nil {
 		return nil, err
@@ -50,6 +55,7 @@ func NewKubeConfig(ca, url string, output io.ReadWriteCloser) (*KubeConfig, erro
 	return &KubeConfig{
 		ca,
 		url,
+		namespace,
 		tmpl,
 		output,
 	}, nil
@@ -61,6 +67,7 @@ func (k *KubeConfig) Generate(token string) error {
 	err := k.tmpl.Execute(k.Output, configData{
 		k.CA,
 		k.URL,
+		k.NS,
 		token,
 	})
 	if err != nil {
