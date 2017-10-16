@@ -40,10 +40,12 @@ var _ = Describe("OidcGenerator", func() {
 		Context("AuthCodeURL", func() {
 			It("should return a url with the given state", func() {
 				state := "some-random-state"
-				Expect(konfig.AuthCodeURL(state)).To(
+				nonceSecretValue := "cryptography-yay"
+				Expect(konfig.AuthCodeURL(state, nonceSecretValue)).To(
 					ContainSubstring(
-						"?client_id=%s&redirect_uri=%s&response_type=code&state=%s",
+						"?client_id=%s&nonce=%s&redirect_uri=%s&response_type=code&state=%s",
 						clientID,
+						nonceSecretValue,
 						url.QueryEscape("http://localhost:"+localPort+localRedirectEndpoint),
 						state,
 					),

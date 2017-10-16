@@ -39,8 +39,8 @@ func NewOidcGenerator(adfsHostURL, clientID, localPort, localRedirectEndpoint st
 }
 
 // AuthCodeURL calls the underlying oauth2.Config AuthCodeURL.
-func (o *OidcGenerator) AuthCodeURL(state string) string {
-	return o.config.AuthCodeURL(state)
+func (o *OidcGenerator) AuthCodeURL(state, nonceValue string) string {
+	return o.config.AuthCodeURL(state, oidc.Nonce(nonceValue))
 }
 
 func (o *OidcGenerator) openBrowser() {

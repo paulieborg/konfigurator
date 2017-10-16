@@ -13,6 +13,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -24,6 +25,7 @@ type Konfigurator struct {
 	config         *OidcGenerator
 	tokenRetrieved chan int
 	state          string
+	nonceValue     string
 	kubeConfig     *KubeConfig
 }
 
@@ -56,6 +58,7 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 		config,
 		make(chan int, 1),
 		uid.String(),
+		string(rand.New(rand.NewSource(time.Now().UnixNano())).Int()),
 		kubeConfig,
 	}, nil
 }
@@ -100,7 +103,7 @@ func (k *Konfigurator) startHTTPServer() *http.Server {
 }
 
 func (k *Konfigurator) rootHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, k.config.AuthCodeURL(k.state), http.StatusFound)
+	http.Redirect(w, r, k.config.AuthCodeURL(k.state, k.nonceValue), http.StatusFound)
 }
 
 func (k *Konfigurator) noContentHandler(w http.ResponseWriter, r *http.Request) {
