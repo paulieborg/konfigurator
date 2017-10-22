@@ -64,7 +64,7 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: 123
-    server: https://api.example.com
+    server: https://example.com
   name: example.com
 contexts:
 - context:
@@ -102,7 +102,7 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: 123
-    server: https://api.example.com
+    server: https://example.com
   name: example.com
 contexts:
 - context:

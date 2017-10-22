@@ -90,7 +90,8 @@ func (k *Konfigurator) startHTTPServer() *http.Server {
 
 	http.HandleFunc("/", k.rootHandler)
 	http.HandleFunc("/favicon.ico", k.noContentHandler)
-	http.HandleFunc(k.config.localRedirectEndpoint, k.callbackHandler)
+	http.HandleFunc(k.config.localRedirectEndpoint, tokenRedirectCallbackHandler)
+	http.HandleFunc("/auth/js/redirect", k.callbackHandler)
 
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
@@ -116,17 +117,17 @@ func (k *Konfigurator) callbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := k.config.GetToken(r.URL.Query().Get("code"))
-	if err != nil {
-		log.Printf("Failed extracting token: %s", err)
-		return
-	}
+	token := r.URL.Query().Get("id_token")
 
 	k.kubeConfig.Generate(token)
 	io.WriteString(w, httpContent)
 	// unblock
 	k.tokenRetrieved <- 1
 	return
+}
+
+func tokenRedirectCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, httpTokenRedirectContent)
 }
 
 var httpContent = `
@@ -141,5 +142,16 @@ var httpContent = `
             }, 2000);
         </script>
     </body>
+</html>
+`
+
+var httpTokenRedirectContent = `
+<html>
+	<script>
+		(function() {
+			var hash = location.hash.slice(1);
+			window.location = "/auth/js/redirect?" + hash;
+		})()
+	</script>
 </html>
 `

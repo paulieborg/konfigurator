@@ -3,6 +3,8 @@ package konfigurator
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/url"
 
 	oidc "github.com/coreos/go-oidc"
 	"github.com/skratchdot/open-golang/open"
@@ -18,9 +20,10 @@ type OidcGenerator struct {
 }
 
 // NewOidcGenerator uses a default background context and 'localhost' for the redirectUrl and returns a new OidcGenerator struct.
-func NewOidcGenerator(adfsHostURL, clientID, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
+func NewOidcGenerator(hostURL, clientID, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
 	ctx := context.Background()
-	provider, err := oidc.NewProvider(ctx, adfsHostURL)
+	provider, err := oidc.NewProvider(ctx, hostURL)
+
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +43,13 @@ func NewOidcGenerator(adfsHostURL, clientID, localPort, localRedirectEndpoint st
 
 // AuthCodeURL calls the underlying oauth2.Config AuthCodeURL.
 func (o *OidcGenerator) AuthCodeURL(state, nonceValue string) string {
-	return o.config.AuthCodeURL(state, oidc.Nonce(nonceValue))
+	redirect := url.Values{}
+	redirect.Add("client_id", o.config.ClientID)
+	redirect.Add("nonce", nonceValue)
+	redirect.Add("redirect_uri", o.config.RedirectURL)
+	redirect.Add("response_type", "id_token")
+	redirect.Add("state", state)
+	return fmt.Sprintf("%s?%s", o.config.Endpoint.AuthURL, redirect.Encode())
 }
 
 func (o *OidcGenerator) openBrowser() {

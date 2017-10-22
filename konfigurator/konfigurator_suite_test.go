@@ -51,7 +51,7 @@ const MockResponseMissingToken = `{
 }`
 
 const (
-	adfsHostUrl           = "http://example.com"
+	hostUrl               = "http://example.com"
 	clientID              = "fake-client-id"
 	localPort             = "9999"
 	localRedirectEndpoint = "/redirect-endpoint"

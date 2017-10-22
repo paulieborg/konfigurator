@@ -19,7 +19,7 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: {{.CA}}
-    server: https://api.{{.URL}}
+    server: https://{{.URL}}
   name: {{.URL}}
 contexts:
 - context:

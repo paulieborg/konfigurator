@@ -20,11 +20,11 @@ var _ = Describe("OidcGenerator", func() {
 		BeforeEach(func() {
 			httpmock.RegisterResponder(
 				"GET",
-				adfsHostUrl+"/.well-known/openid-configuration",
+				hostUrl+"/.well-known/openid-configuration",
 				httpmock.NewStringResponder(http.StatusOK, MockResponseOidcConfiguration),
 			)
 
-			konfig, err = NewOidcGenerator(adfsHostUrl, clientID, localPort, localRedirectEndpoint)
+			konfig, err = NewOidcGenerator(hostUrl, clientID, localPort, localRedirectEndpoint)
 		})
 
 		Context("creating a new OidcGenerator", func() {
@@ -43,7 +43,7 @@ var _ = Describe("OidcGenerator", func() {
 				nonceSecretValue := "cryptography-yay"
 				Expect(konfig.AuthCodeURL(state, nonceSecretValue)).To(
 					ContainSubstring(
-						"?client_id=%s&nonce=%s&redirect_uri=%s&response_type=code&state=%s",
+						"?client_id=%s&nonce=%s&redirect_uri=%s&response_type=id_token&state=%s",
 						clientID,
 						nonceSecretValue,
 						url.QueryEscape("http://localhost:"+localPort+localRedirectEndpoint),
