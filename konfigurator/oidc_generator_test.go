@@ -1,6 +1,7 @@
 package konfigurator_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -38,17 +39,17 @@ var _ = Describe("OidcGenerator", func() {
 		})
 
 		Context("AuthCodeURL", func() {
-			It("should return a url with the given state", func() {
+			It("should return a url with the given state, nonce and scope", func() {
 				state := "some-random-state"
 				nonceSecretValue := "cryptography-yay"
 				Expect(konfig.AuthCodeURL(state, nonceSecretValue)).To(
-					ContainSubstring(
-						"?client_id=%s&nonce=%s&redirect_uri=%s&response_type=id_token&state=%s",
+					Equal(fmt.Sprintf(
+						"http://example.com/auth?client_id=%s&nonce=%s&redirect_uri=%s&response_type=id_token&scope=openid&state=%s",
 						clientID,
 						nonceSecretValue,
 						url.QueryEscape("http://localhost:"+localPort+localRedirectEndpoint),
 						state,
-					),
+					)),
 				)
 			})
 		})

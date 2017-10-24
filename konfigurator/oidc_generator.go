@@ -48,6 +48,7 @@ func (o *OidcGenerator) AuthCodeURL(state, nonceValue string) string {
 	redirect.Add("nonce", nonceValue)
 	redirect.Add("redirect_uri", o.config.RedirectURL)
 	redirect.Add("response_type", "id_token")
+	redirect.Add("scope", "openid")
 	redirect.Add("state", state)
 	return fmt.Sprintf("%s?%s", o.config.Endpoint.AuthURL, redirect.Encode())
 }
