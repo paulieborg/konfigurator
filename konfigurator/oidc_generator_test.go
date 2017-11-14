@@ -1,6 +1,7 @@
 package konfigurator_test
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -93,6 +94,48 @@ var _ = Describe("OidcGenerator", func() {
 				konfig, err = NewOidcGenerator("some-invalid-host.com", "123", "999", "/endpoint")
 				Expect(err).NotTo(BeNil())
 				Expect(konfig).To(BeNil())
+			})
+		})
+	})
+
+	Describe("openBrowser", func() {
+		Context("calling Run", func() {
+			It("should call the Runner", func() {
+				var err error
+				var isCalled bool
+				out := bytes.NewBuffer([]byte{})
+				konfig := OidcGenerator{
+					Run: func(string) error {
+						isCalled = true
+						return nil
+					},
+					Stream: out,
+				}
+				konfig.OpenBrowser()
+
+				Expect(isCalled).To(BeTrue())
+				Expect(err).To(BeNil())
+				Expect(out.String()).To(BeEmpty())
+			})
+
+			It("should call a failed runner", func() {
+				var err error
+				var isCalled bool
+				out := bytes.NewBuffer([]byte{})
+				konfig := OidcGenerator{
+					Run: func(string) error {
+						isCalled = true
+						err = fmt.Errorf("some error")
+						return err
+					},
+					Stream: out,
+				}
+
+				konfig.OpenBrowser()
+
+				Expect(isCalled).To(BeTrue())
+				Expect(err).ToNot(BeNil())
+				Expect(out).To(MatchRegexp("Go to the following url to authenticate: http://.*."))
 			})
 		})
 	})

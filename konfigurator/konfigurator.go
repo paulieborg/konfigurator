@@ -69,7 +69,7 @@ func NewKonfigurator(oidcHost, oidcClientID, oidcClientPort, oidcClientRedirectE
 // and close the web server. The webserver will only be closed once the authentication succeeds.
 func (k *Konfigurator) Orchestrate() error {
 	server := k.startHTTPServer()
-	k.config.openBrowser()
+	k.config.OpenBrowser()
 
 	// block
 	<-k.tokenRetrieved

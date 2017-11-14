@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
+	"os"
+
+	"github.com/skratchdot/open-golang/open"
 
 	oidc "github.com/coreos/go-oidc"
-	"github.com/skratchdot/open-golang/open"
 	"golang.org/x/oauth2"
 )
 
@@ -17,13 +20,14 @@ type OidcGenerator struct {
 	config                oauth2.Config
 	localURL              string
 	localRedirectEndpoint string
+	Run                   func(string) error
+	Stream                io.Writer
 }
 
 // NewOidcGenerator uses a default background context and 'localhost' for the redirectUrl and returns a new OidcGenerator struct.
 func NewOidcGenerator(hostURL, clientID, localPort, localRedirectEndpoint string) (*OidcGenerator, error) {
 	ctx := context.Background()
 	provider, err := oidc.NewProvider(ctx, hostURL)
-
 	if err != nil {
 		return nil, err
 	}
@@ -38,6 +42,8 @@ func NewOidcGenerator(hostURL, clientID, localPort, localRedirectEndpoint string
 		},
 		localURL:              localURL,
 		localRedirectEndpoint: localRedirectEndpoint,
+		Run:    open.Run,
+		Stream: os.Stderr,
 	}, nil
 }
 
@@ -53,8 +59,11 @@ func (o *OidcGenerator) AuthCodeURL(state, nonceValue string) string {
 	return fmt.Sprintf("%s?%s", o.config.Endpoint.AuthURL, redirect.Encode())
 }
 
-func (o *OidcGenerator) openBrowser() {
-	open.Run("http://" + o.localURL)
+// OpenBrowser opens a browser with the given url
+func (o *OidcGenerator) OpenBrowser() {
+	if err := o.Run("http://" + o.localURL); err != nil {
+		fmt.Fprintf(o.Stream, "Go to the following url to authenticate: http://%s/", o.localURL)
+	}
 }
 
 // GetToken retrieves the Oauth2 token from the request and extracts the "id_token" part of it.
